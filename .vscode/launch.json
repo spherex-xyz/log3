@@ -1,0 +1,28 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug executable 'log3-lambda'",
+      "cargo": {
+        "args": ["build", "--bin=log3-lambda", "--package=log3-lambda"],
+        "filter": {
+          "name": "log3-lambda",
+          "kind": "bin"
+        }
+      },
+      "args": ["--only-lambda-apis"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "AWS_LAMBDA_FUNCTION_VERSION": "1",
+        "AWS_LAMBDA_FUNCTION_MEMORY_SIZE": "4096",
+        "AWS_LAMBDA_RUNTIME_API": "http://[::]:9000/.rt",
+        "AWS_LAMBDA_FUNCTION_NAME": "_"
+      }
+    }
+  ]
+}
