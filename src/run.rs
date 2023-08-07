@@ -2,8 +2,12 @@ use std::{collections::HashMap, str::FromStr};
 
 use ethers_core::{
     abi::Address,
-    types::{BigEndianHash, Block, Bytes, Chain, Log, Transaction, H256, U256},
-    utils::keccak256,
+    types::{
+        BigEndianHash, Block, Bytes, Chain, GethDebugBuiltInTracerType, GethDebugTracerType,
+        GethDebugTracingOptions, GethTrace, GethTraceFrame, Log, PreStateFrame, Transaction, H256,
+        U256,
+    },
+    utils::{hex, keccak256},
 };
 use ethers_etherscan::{
     contract::{Metadata, SourceCodeEntry, SourceCodeMetadata},
@@ -23,12 +27,14 @@ use foundry_evm::{
         Backend, Bytecode, DeployResult, Env, Executor, ExecutorBuilder, RawCallResult, SpecId,
     },
     revm::{
-        primitives::{ruint::Uint, B256},
+        primitives::{ruint::Uint, AccountInfo, B256},
         Database,
     },
     utils::{h160_to_b160, u256_to_ru256},
 };
 use regex::Regex;
+
+use crate::models::MethodType;
 
 pub async fn run(
     chainid: u64,
@@ -36,6 +42,7 @@ pub async fn run(
     contract_address: String,
     tx_hash: String,
     endpoint: String,
+    method_type: MethodType,
 ) -> eyre::Result<Vec<String>> {
     let chain = Chain::try_from(chainid).unwrap();
     let mut contract_metadata =
@@ -54,7 +61,8 @@ pub async fn run(
         .unwrap()
         .clone();
 
-    let produced_logs = simulate_tx(endpoint, tx_hash, contract_address, bytecode).await?;
+    let produced_logs =
+        simulate_tx(endpoint, tx_hash, contract_address, bytecode, method_type).await?;
 
     Ok(produced_logs)
 }
@@ -142,6 +150,7 @@ async fn simulate_tx(
     tx_hash: String,
     contract_address: String,
     code: Bytes,
+    method_type: MethodType,
 ) -> Result<Vec<String>> {
     let figment = Config::figment().merge(("eth_rpc_url", endpoint.clone()));
     let mut evm_opts = figment.extract::<EvmOpts>().unwrap();
@@ -172,28 +181,22 @@ async fn simulate_tx(
 
     let mut env = configure_env_for_executor(&executor, tx.block_number.unwrap().as_u64(), &block);
 
-    for (_, replayed_tx) in block.transactions.into_iter().enumerate() {
-        if replayed_tx
-            .transaction_index
-            .unwrap()
-            .as_u64()
-            .eq(&tx.transaction_index.unwrap().as_u64())
-        {
-            break;
+    match method_type {
+        MethodType::Plain => {
+            prepare_fork_state_plain(
+                &mut executor,
+                &mut env,
+                &block,
+                tx.transaction_index.unwrap().as_u64(),
+            )
+            .unwrap();
         }
-
-        configure_tx_env(&mut env, &replayed_tx);
-
-        if let Some(_) = replayed_tx.to {
-            // trace!(tx=?tx.hash,?to, "executing previous call transaction");
-            executor.commit_tx_with_env(env.clone()).unwrap();
-        } else {
-            // trace!(tx=?tx.hash, "executing previous create transaction");
-            executor.deploy_with_env(env.clone(), None).unwrap();
+        MethodType::Prestate => {
+            prepare_fork_state_debug(&mut executor, &provider, tx.hash.clone())
+                .await
+                .unwrap();
         }
     }
-
-    // let code2=Bytes::from_str("0x608060405234801561001057600080fd5b50600436106100415760003560e01c8063371303c01461004657806361bc221a146100505780636d4ce63c1461006e575b600080fd5b61004e61008c565b005b6100586100c9565b60405161006591906101f8565b60405180910390f35b6100766100cf565b60405161008391906101f8565b60405180910390f35b60008081548092919061009e90610242565b91905055506100c76040518060600160405280602c815260200161034b602c913960005461011a565b565b60005481565b60006101126040518060400160405280602081526020017f5b436f6e736f6c65546573745d5b6765745d20636f756e74657220697320256481525060005461011a565b600054905090565b6101b2828260405160240161013092919061031a565b6040516020818303038152906040527fb60e72cc000000000000000000000000000000000000000000000000000000007bffffffffffffffffffffffffffffffffffffffffffffffffffffffff19166020820180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff83818316178352505050506101b6565b5050565b60008151905060006a636f6e736f6c652e6c6f679050602083016000808483855afa5050505050565b6000819050919050565b6101f2816101df565b82525050565b600060208201905061020d60008301846101e9565b92915050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b600061024d826101df565b91507fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff820361027f5761027e610213565b5b600182019050919050565b600081519050919050565b600082825260208201905092915050565b60005b838110156102c45780820151818401526020810190506102a9565b60008484015250505050565b6000601f19601f8301169050919050565b60006102ec8261028a565b6102f68185610295565b93506103068185602086016102a6565b61030f816102d0565b840191505092915050565b6000604082019050818103600083015261033481856102e1565b905061034360208301846101e9565b939250505056fe5b436f6e736f6c65546573745d5b696e635d20636f756e74657220696e6372656d656e74656420746f202564a26469706673582212206fa42d8d11c48ed1600ee9e9380519c792400117c51cc826e5d10de84e6ea44c64736f6c63430008120033").unwrap();
 
     let overrides = StateOverride::from([(
         Address::from_str(contract_address.as_str()).unwrap(),
@@ -253,6 +256,63 @@ async fn simulate_tx(
     print_logs(&result);
 
     Ok(decode_console_logs(&result))
+}
+
+fn prepare_fork_state_plain(
+    executor: &mut Executor,
+    mut env: &mut Env,
+    block: &Block<Transaction>,
+    tx_index: u64,
+) -> Result<()> {
+    for (_, replayed_tx) in block.transactions.iter().enumerate() {
+        if replayed_tx
+            .transaction_index
+            .unwrap()
+            .as_u64()
+            .eq(&tx_index)
+        {
+            break;
+        }
+
+        configure_tx_env(&mut env, &replayed_tx);
+
+        if let Some(_) = replayed_tx.to {
+            // trace!(tx=?tx.hash,?to, "executing previous call transaction");
+            executor.commit_tx_with_env(env.clone()).unwrap();
+        } else {
+            // trace!(tx=?tx.hash, "executing previous create transaction");
+            executor.deploy_with_env(env.clone(), None).unwrap();
+        }
+    }
+
+    Ok(())
+}
+
+async fn prepare_fork_state_debug(
+    executor: &mut Executor,
+    provider: &foundry_common::RetryProvider,
+    tx_hash: H256,
+) -> Result<()> {
+    let states = provider
+        .debug_trace_transaction(
+            tx_hash,
+            GethDebugTracingOptions {
+                tracer: Some(GethDebugTracerType::BuiltInTracer(
+                    GethDebugBuiltInTracerType::PreStateTracer,
+                )),
+                ..Default::default()
+            },
+        )
+        .await
+        .unwrap();
+
+    let test = match states {
+        GethTrace::Known(GethTraceFrame::PreStateTracer(x)) => x,
+        _ => panic!("Unknown trace type"),
+    };
+
+    apply_pre_state(executor.backend_mut(), test).unwrap();
+    Ok(())
 }
 
 fn get_provider(config: &Config) -> foundry_common::RetryProvider {
@@ -358,6 +418,42 @@ fn apply_state_override(db: &mut Backend, overrides: StateOverride) -> DatabaseR
                 }
             }
         };
+    }
+    Ok(())
+}
+
+pub fn apply_pre_state(db: &mut Backend, pre_state: PreStateFrame) -> DatabaseResult<()> {
+    let prestate_mode = match pre_state {
+        PreStateFrame::Default(prestate_mode) => prestate_mode.to_owned(),
+        _ => panic!("Unsupported PreStateFrame"),
+    };
+
+    for (account, account_overrides) in prestate_mode.0 {
+        // let mut account_info = db.basic((account).into())?.unwrap_or_default();
+        let mut account_info = AccountInfo::default();
+
+        if let Some(nonce) = account_overrides.nonce {
+            // convert to nonce to U256 to u64
+            account_info.nonce = nonce.as_u64();
+        }
+        if let Some(code) = account_overrides.code {
+            account_info.code = Some(Bytecode::new_raw(hex::decode(&code[2..]).unwrap().into()));
+        }
+        if let Some(balance) = account_overrides.balance {
+            account_info.balance = balance.into();
+        }
+
+        db.insert_account_info(account, account_info);
+
+        if let Some(storage) = account_overrides.storage {
+            for (key, value) in storage.iter() {
+                db.active_fork_db_mut().unwrap().insert_account_storage(
+                    (account).into(),
+                    key.into_uint().into(),
+                    value.into_uint().into(),
+                )?;
+            }
+        }
     }
     Ok(())
 }

@@ -33,6 +33,7 @@ eyre = "0.6.8"
 regex = "1.9.1"
 serde = "1.0.174"
 serde_json = "1.0.103"
+serde_repr = "0.1.16"
 
 # [patch."https://github.com/foundry-rs/foundry.git"]
 # foundry-common = { path = "../foundry/common" }
