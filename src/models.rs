@@ -1,4 +1,13 @@
 use serde::{Deserialize, Serialize};
+use serde_repr::*;
+
+#[derive(Clone, Debug, PartialEq, Default,Serialize_repr, Deserialize_repr)]
+#[repr(u8)]
+pub enum MethodType {
+    #[default]
+    Plain = 0,
+    Prestate = 1,
+}
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Log3Json {
@@ -7,6 +16,7 @@ pub struct Log3Json {
     pub contract_address: String,
     pub tx_hash: String,
     pub endpoint: String,
+    pub method: Option<MethodType>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]

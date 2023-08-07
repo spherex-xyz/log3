@@ -18,6 +18,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         log3_json.contract_address,
         log3_json.tx_hash,
         log3_json.endpoint,
+        log3_json.method.unwrap_or_default(),
     )
     .await?;
 
