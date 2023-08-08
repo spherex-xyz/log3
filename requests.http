@@ -22,6 +22,19 @@ GET http://localhost:9000/
   "method": 1
 }
 
+####
+GET http://localhost:9000/
+    Content-Type: application/json
+
+{
+  "chainid": 1,
+  "etherscan_api_key": "IKR7R43GMBUI1BYAGS2R6WI19MGWGPR1VS",
+  "contract_address": "0xf12EC0D3Dab64DdEfBdC96474bDe25af3FE1B327",
+  "tx_hash": "0xcd6b6a469b4ab037f44e2254dfb100b317bd9b5d672095438d67a4898403f65f",
+  "endpoint": "https://nd-147-078-642.p2pify.com/854ade81dd6b8edc86b0529c4d9083e7",
+  "method": 1
+}
+
 
 ####
 
@@ -33,7 +46,8 @@ GET http://localhost:9000/
   "etherscan_api_key": "IKR7R43GMBUI1BYAGS2R6WI19MGWGPR1VS",
   "contract_address": "0x3C3207B84Fc14c2F362a09cDF38B13e5D8dcb96C",
   "tx_hash": "0x195d7cfbab278a23e3f97283851260cf76d0ac47a1cf2e7c9a3d1eae0742b43c",
-  "endpoint": "https://nd-147-078-642.p2pify.com/854ade81dd6b8edc86b0529c4d9083e7"
+  "endpoint": "https://nd-147-078-642.p2pify.com/854ade81dd6b8edc86b0529c4d9083e7",
+  "method": 1
 }
 
 

@@ -170,7 +170,7 @@ async fn simulate_tx(
     evm_opts.fork_url = Some(config.get_rpc_url_or_localhost_http().unwrap().into_owned());
     evm_opts.fork_block_number = Some(tx.block_number.unwrap().as_u64() - 1);
 
-    let env = evm_opts.evm_env().await;
+    let env = evm_opts.evm_env().await.unwrap();
     let db = Backend::spawn(evm_opts.get_fork(&config, env.clone())).await;
     let builder = ExecutorBuilder::default()
         .with_config(env)
