@@ -19,9 +19,7 @@ lambda_http = "0.8.1"
 lambda_runtime = "0.8.1"
 tokio = { version = "1", features = ["macros"] }
 tracing = { version = "0.1", features = ["log"] }
-tracing-subscriber = { version = "0.3", default-features = false, features = [
-    "fmt",
-] }
+tracing-subscriber = { version = "0.3", default-features = false, features = ["fmt"] }
 ethers-core = { git = "https://github.com/gakonst/ethers-rs", version = "2.0.7" }
 ethers-etherscan = { git = "https://github.com/gakonst/ethers-rs", version = "2.0.7" }
 ethers-providers = { git = "https://github.com/gakonst/ethers-rs", version = "2.0.7" }
