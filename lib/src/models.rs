@@ -9,6 +9,15 @@ pub enum MethodType {
     Prestate = 1,
 }
 
+impl From<u8> for MethodType {
+    fn from(v: u8) -> Self {
+        match v {
+            0 => MethodType::Plain,
+            _ => MethodType::Prestate,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Log3Json {
     pub chainid: u64,
