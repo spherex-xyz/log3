@@ -1,3 +1,4 @@
+pub mod models;
 use std::{collections::HashMap, str::FromStr};
 
 use ethers_core::{
@@ -34,7 +35,7 @@ use foundry_evm::{
 };
 use regex::Regex;
 
-use crate::models::MethodType;
+use models::MethodType;
 
 pub async fn run(
     chainid: u64,

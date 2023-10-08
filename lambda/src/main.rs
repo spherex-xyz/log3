@@ -1,7 +1,6 @@
-mod models;
-mod run;
 use lambda_http::{run, service_fn, Body, Error, Request, RequestPayloadExt, Response};
-use models::Log3Json;
+use log3_lib;
+use log3_lib::models::Log3Json;
 use serde_json::json;
 
 /// This is the main body for the function.
@@ -12,7 +11,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     // Extract some useful information from the request
     let log3_json: Log3Json = event.payload().expect("body error").expect("body error2");
 
-    let run_rs = run::run(
+    let run_rs = log3_lib::run(
         log3_json.chainid,
         log3_json.etherscan_api_key,
         log3_json.contract_address,

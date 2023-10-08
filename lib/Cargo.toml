@@ -1,0 +1,32 @@
+[package]
+name = "log3-lib"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ethers-core = { git = "https://github.com/gakonst/ethers-rs", version = "2.0.7" }
+ethers-etherscan = { git = "https://github.com/gakonst/ethers-rs", version = "2.0.7" }
+ethers-providers = { git = "https://github.com/gakonst/ethers-rs", version = "2.0.7" }
+ethers-solc = { git = "https://github.com/gakonst/ethers-rs", version = "2.0.7" }
+foundry-common = { git = "https://github.com/foundry-rs/foundry.git", version = "0.1.0" }
+foundry-evm = { git = "https://github.com/foundry-rs/foundry.git", version = "0.2.0" }
+foundry-config = { git = "https://github.com/foundry-rs/foundry.git", version = "0.2.0" }
+eyre = "0.6.8"
+regex = "1.9.1"
+serde = "1.0.174"
+serde_json = "1.0.103"
+serde_repr = "0.1.16"
+tokio = { version = "1", features = ["macros"] }
+
+[patch."https://github.com/gakonst/ethers-rs"]
+ethers-core = { path = "../ethers-rs" }
+ethers-etherscan = { path = "../ethers-rs" }
+ethers-providers = { path = "../ethers-rs" }
+ethers-solc = { path = "../ethers-rs" }
+
+[patch."https://github.com/foundry-rs/foundry.git"]
+foundry-common = { path = "../foundry" }
+foundry-evm = { path = "../foundry" }
+foundry-config = { path = "../foundry" }
