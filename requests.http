@@ -6,7 +6,7 @@ GET http://localhost:9000/
   "etherscan_api_key": "IKR7R43GMBUI1BYAGS2R6WI19MGWGPR1VS",
   "contract_address": "0x68b9f7Ce808A35693273d789051CE5fcf193852e",
   "tx_hash": "0x6c15603e1b1fa69be2cef7eaf8c0153ba55646f4ba892441e78d4a2a79fd2868",
-  "endpoint": "https://nd-147-078-642.p2pify.com/854ade81dd6b8edc86b0529c4d9083e7"
+  "endpoint": "{{$dotenv RPCENDPOINT}}"
 }
 
 ####
@@ -18,7 +18,7 @@ GET http://localhost:9000/
   "etherscan_api_key": "IKR7R43GMBUI1BYAGS2R6WI19MGWGPR1VS",
   "contract_address": "0x60FB45483d9E48dFC602f49E094024F8DA292416",
   "tx_hash": "0xa41a5e85874c305b2cdc1c0f529d2025ae41b5ed865452999ace0c385cc9fc4e",
-  "endpoint": "https://nd-147-078-642.p2pify.com/854ade81dd6b8edc86b0529c4d9083e7",
+  "endpoint":"{{$dotenv RPCENDPOINT}}",
   "method": 1
 }
 
@@ -31,7 +31,7 @@ GET http://localhost:9000/
   "etherscan_api_key": "IKR7R43GMBUI1BYAGS2R6WI19MGWGPR1VS",
   "contract_address": "0xf12EC0D3Dab64DdEfBdC96474bDe25af3FE1B327",
   "tx_hash": "0xcd6b6a469b4ab037f44e2254dfb100b317bd9b5d672095438d67a4898403f65f",
-  "endpoint": "https://nd-147-078-642.p2pify.com/854ade81dd6b8edc86b0529c4d9083e7",
+  "endpoint": "{{$dotenv RPCENDPOINT}}",
   "method": 1
 }
 
@@ -46,7 +46,7 @@ GET http://localhost:9000/
   "etherscan_api_key": "IKR7R43GMBUI1BYAGS2R6WI19MGWGPR1VS",
   "contract_address": "0x3C3207B84Fc14c2F362a09cDF38B13e5D8dcb96C",
   "tx_hash": "0x195d7cfbab278a23e3f97283851260cf76d0ac47a1cf2e7c9a3d1eae0742b43c",
-  "endpoint": "https://nd-147-078-642.p2pify.com/854ade81dd6b8edc86b0529c4d9083e7",
+  "endpoint": "{{$dotenv RPCENDPOINT}}",
   "method": 1
 }
 
@@ -74,6 +74,6 @@ GET https://w2tt327ml6lhd5too2o2onlowe0vkubj.lambda-url.us-east-1.on.aws/
   "etherscan_api_key": "IKR7R43GMBUI1BYAGS2R6WI19MGWGPR1VS",
   "contract_address": "0xf12EC0D3Dab64DdEfBdC96474bDe25af3FE1B327",
   "tx_hash": "0xcd6b6a469b4ab037f44e2254dfb100b317bd9b5d672095438d67a4898403f65f",
-  "endpoint": "https://nd-147-078-642.p2pify.com/854ade81dd6b8edc86b0529c4d9083e7",
+  "endpoint": "{{$dotenv RPCENDPOINT}}",
   "method": 1
 }
