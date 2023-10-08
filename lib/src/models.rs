@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 use serde_repr::*;
 
-#[derive(Clone, Debug, PartialEq, Default,Serialize_repr, Deserialize_repr)]
+#[derive(Clone, Debug, PartialEq, Default, Serialize_repr, Deserialize_repr)]
 #[repr(u8)]
 pub enum MethodType {
-    #[default]
     Plain = 0,
+    #[default]
     Prestate = 1,
 }
 
