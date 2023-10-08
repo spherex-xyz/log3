@@ -1,6 +1,6 @@
 [workspace]
 
-members = ["lib", "lambda"]
+members = ["lib", "lambda", "cli"]
 
 # [package]
 # name = "log3-lambda"
