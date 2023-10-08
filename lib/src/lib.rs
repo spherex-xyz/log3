@@ -45,14 +45,14 @@ pub async fn run(
     endpoint: String,
     method_type: MethodType,
 ) -> eyre::Result<Vec<String>> {
-    println!("run started");
+    eprintln!("run started");
     let chain = Chain::try_from(chainid).unwrap();
     let mut contract_metadata =
         get_source_from_etherscan(chain, contract_address.clone(), etherscan_api_key).await?;
-    println!("Got contracts from etherscan");
+    eprintln!("Got contracts from etherscan");
 
     let patched_metadata = patch_metadata_source(&mut contract_metadata).await?;
-    println!("Patched source code");
+    eprintln!("Patched source code");
 
     let (_, contract_bytecode) = compile_from_source(&patched_metadata).await?;
     let bytecode = contract_bytecode
@@ -65,7 +65,7 @@ pub async fn run(
         .unwrap()
         .clone();
 
-    println!("Compiled source code");
+    eprintln!("Compiled source code");
 
     let produced_logs =
         simulate_tx(endpoint, tx_hash, contract_address, bytecode, method_type).await?;
@@ -466,6 +466,6 @@ pub fn apply_pre_state(db: &mut Backend, pre_state: PreStateFrame) -> DatabaseRe
 
 fn print_logs(logs: &[Log]) {
     for log in decode_console_logs(logs) {
-        print!("{:?}\n", log);
+        eprint!("{:?}\n", log);
     }
 }
