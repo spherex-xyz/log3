@@ -63,17 +63,3 @@ GET http://localhost:9000/
   "tx_hash": "0x68ec8cda248a06f07c7078da6e141195595348f9dc56785849578eebacc4a87e",
   "endpoint": "https://sepolia.infura.io/v3/ad11d138a9274533a92fa0ed816205f7"
 }
-
-##### Deployment
-
-GET https://w2tt327ml6lhd5too2o2onlowe0vkubj.lambda-url.us-east-1.on.aws/
-    Content-Type: application/json
-
-{
-  "chainid": 1,
-  "etherscan_api_key": "{{$dotenv ETHERSCANKEY}}",
-  "contract_address": "0xf12EC0D3Dab64DdEfBdC96474bDe25af3FE1B327",
-  "tx_hash": "0xcd6b6a469b4ab037f44e2254dfb100b317bd9b5d672095438d67a4898403f65f",
-  "endpoint": "{{$dotenv RPCENDPOINT}}",
-  "method": 1
-}
