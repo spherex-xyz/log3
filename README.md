@@ -3,8 +3,9 @@
 Log3 is a `console.sol` log extraction tool for mined transactions. It is heavily relient on [Foundry](https://github.com/foundry-rs/foundry).
 The purpose of creating this is to allow a more robust type of runtime logs while maintaining zero gas cost.
 
-![image](https://github.com/spherex-xyz/log3/assets/20728006/4b043f2c-8a9c-45cb-abe5-3621dfee5d66)
-
+<p align="center">
+<img src="https://github.com/spherex-xyz/log3/assets/20728006/4b043f2c-8a9c-45cb-abe5-3621dfee5d66" />
+</p>
 
 # CLI
 
