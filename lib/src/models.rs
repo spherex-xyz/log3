@@ -1,12 +1,21 @@
 use serde::{Deserialize, Serialize};
 use serde_repr::*;
 
-#[derive(Clone, Debug, PartialEq, Default,Serialize_repr, Deserialize_repr)]
+#[derive(Clone, Debug, PartialEq, Default, Serialize_repr, Deserialize_repr)]
 #[repr(u8)]
 pub enum MethodType {
-    #[default]
     Plain = 0,
+    #[default]
     Prestate = 1,
+}
+
+impl From<u8> for MethodType {
+    fn from(v: u8) -> Self {
+        match v {
+            0 => MethodType::Plain,
+            _ => MethodType::Prestate,
+        }
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]

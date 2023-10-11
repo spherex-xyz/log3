@@ -1,0 +1,6 @@
+[submodule "ethers-rs"]
+	path = ethers-rs
+	url = https://github.com/gakonst/ethers-rs
+[submodule "foundry"]
+	path = foundry
+	url = https://github.com/foundry-rs/foundry.git
